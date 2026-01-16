@@ -29,4 +29,15 @@ class Venta extends Model
     {
         return $this->hasMany(DetalleVenta::class);
     }
+    public function recalcularTotales(): void
+{
+    $subtotal = $this->detalles()->sum('importe');
+    $descuento = (float) ($this->descuento ?? 0);
+    $total = max($subtotal - $descuento, 0);
+
+    $this->update([
+        'subtotal' => $subtotal,
+        'total' => $total,
+    ]);
+}
 }
